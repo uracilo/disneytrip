@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" rx="112" fill="#7A1F33"/>
+  <path d="M256 110c40 56 72 88 72 144a72 72 0 1 1-144 0c0-56 32-88 72-144z" fill="#F6E7C8"/>
+  <circle cx="256" cy="314" r="24" fill="#B8860B"/>
+  <text x="256" y="430" text-anchor="middle" font-family="Georgia, serif" font-size="56" font-weight="700" fill="#F6E7C8">Guía Disney</text>
+</svg>

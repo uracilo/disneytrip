@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
+  <rect width="192" height="192" rx="42" fill="#7A1F33"/>
+  <path d="M96 42c15 21 27 33 27 54a27 27 0 1 1-54 0c0-21 12-33 27-54z" fill="#F6E7C8"/>
+  <circle cx="96" cy="118" r="9" fill="#B8860B"/>
+  <text x="96" y="168" text-anchor="middle" font-family="Georgia, serif" font-size="22" font-weight="700" fill="#F6E7C8">Disney</text>
+</svg>
