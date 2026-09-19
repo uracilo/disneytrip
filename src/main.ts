@@ -48,7 +48,7 @@ import {
 import { activityDotIcon, activityIcon, iconLabel, icons } from './ui/icons'
 import './style.css'
 
-type View = 'ahora' | 'itinerario' | 'shows' | 'buscar'
+type View = 'ahora' | 'itinerario' | 'buscar'
 
 let view: View = 'ahora'
 let completed = loadCompleted()
@@ -253,7 +253,7 @@ function renderNow(snap: DaySnapshot): string {
           <span>${formatDisplayTime(snap.nextShow.time)}</span>
           <span class="countdown">${formatCountdown(snap.nextShow.minutesUntil)}</span>
         </p>
-        <button type="button" class="btn btn-tiny" data-action="goto-shows">Ver shows</button>
+        <button type="button" class="btn btn-tiny" data-action="goto-shows">Ver en itinerario</button>
       </section>`
       : snap.nextShow && snap.nextShow.minutesUntil <= 90
         ? `
@@ -295,39 +295,33 @@ function renderNow(snap: DaySnapshot): string {
       </section>`
     : ''
 
-  const llBlock =
-    snap.watchLanes.length > 0
-      ? `
-      <section class="ll-panel">
-        ${eyebrow(icons.bolt, 'Lightning Lane — ¡Vigilar!')}
-        <div class="ll-buttons">
-          ${snap.watchLanes
-            .map(
-              (a, i) => `
-            <button type="button" class="ll-btn ll-bounce" style="animation-delay:${i * 0.15}s"
-              data-action="jump" data-id="${a.id}">
-              <span class="ll-btn-bolt">${activityIcon(a)}</span>
-              <span class="ll-btn-body">
-                <span class="ll-btn-title">${escapeHtml(a.title)}</span>
-                <span class="ll-btn-meta">
-                  ${
-                    a.llWindow?.returnStart
-                      ? `LL ${formatDisplayTime(a.llWindow.returnStart)}${a.llWindow.returnEnd ? ' – ' + formatDisplayTime(a.llWindow.returnEnd) : ''}`
-                      : a.lightningLane?.estimatedTime
-                        ? `Estimado ${formatDisplayTime(a.lightningLane.estimatedTime)}`
-                        : formatDisplayTime(a.start)
-                  }
-                  ${a.lightningLane?.risk ? ` · Riesgo ${riskLabel(a.lightningLane.risk)}` : ''}
-                </span>
-                <span class="ll-btn-cta">Ver · Agregar horario LL</span>
-              </span>
-              <span class="ll-btn-watch">Vigilar</span>
-            </button>`,
-            )
-            .join('')}
+  // LL sueltos: una tarjeta por atracción, sin panel agrupado
+  const llCards = snap.watchLanes
+    .map(
+      (a) => `
+      <section class="card card-ll-single${a.lightningLane?.risk === 'high' ? ' is-high' : ''}" data-id="${a.id}">
+        ${eyebrow(icons.bolt, 'Lightning Lane')}
+        <div class="title-row title-row-sm">
+          <span class="cat-ico">${activityIcon(a)}</span>
+          <h3 class="next-title">${escapeHtml(a.title)}</h3>
         </div>
-      </section>`
-      : ''
+        <p class="next-meta">
+          <span>${
+            a.llWindow?.returnStart
+              ? `LL ${formatDisplayTime(a.llWindow.returnStart)}${a.llWindow.returnEnd ? ' – ' + formatDisplayTime(a.llWindow.returnEnd) : ''}`
+              : a.lightningLane?.estimatedTime
+                ? `Estimado ${formatDisplayTime(a.lightningLane.estimatedTime)}`
+                : formatDisplayTime(a.start)
+          }</span>
+          ${a.lightningLane?.risk ? `<span class="countdown">Riesgo ${riskLabel(a.lightningLane.risk)}</span>` : '<span class="countdown">Vigilar</span>'}
+        </p>
+        <div class="btn-row">
+          <button type="button" class="btn btn-tiny" data-action="jump" data-id="${a.id}">Ver en itinerario</button>
+          <button type="button" class="btn btn-tiny" data-action="edit-ll" data-id="${a.id}">Agregar horario LL</button>
+        </div>
+      </section>`,
+    )
+    .join('')
 
   const dateNote =
     snap.dateString !== trip.date
@@ -354,7 +348,7 @@ function renderNow(snap: DaySnapshot): string {
       ${nextShowBlock}
       ${nextBlock}
       ${afterBlock}
-      ${llBlock}
+      ${llCards}
       ${renderGoals(snap)}
       <button type="button" class="btn btn-ghost" data-action="goto-itinerario">
         ${icons.list} Ver itinerario
@@ -490,19 +484,13 @@ function renderTimeline(snap: DaySnapshot, effective: EffectiveActivity[]): stri
       </button>
     </header>
     <ol class="timeline">${items}</ol>
+    ${renderShowsSection(snap.nowMinutes)}
   `
 }
 
-function renderShows(): string {
+function renderShowsSection(nowMins: number): string {
   const showList = resolveShows()
   const parades = loadCustomParades()
-  const nowMins = buildSnapshot(
-    resolveActivities(trip.activities),
-    trip.date,
-    completed,
-    showList,
-    pinnedNow,
-  ).nowMinutes
 
   const cards = showList
     .map((s) => {
@@ -554,31 +542,30 @@ function renderShows(): string {
     .join('')
 
   return `
-    <header class="top-bar top-bar-compact">
-      <div class="brand-row brand-row-compact">
-        <p class="brand">Guía Disney</p>
-        <p class="section-title">Shows</p>
+    <section class="shows-in-itinerary" id="shows-section">
+      <div class="tl-park-header park-head-dl shows-divider">
+        <p>${icons.show} Shows y espectáculos</p>
       </div>
-    </header>
-    <div class="shows-stack">
-      ${cards}
-      <section class="card parade-card">
-        <h3>Desfiles</h3>
-        <p class="muted"><strong>No hay desfile confirmado actualmente</strong> para el sábado 26 sep 2026.</p>
-        <p class="verify-note">Verificar Disneyland App el mismo día.</p>
-        ${
-          parades.length
-            ? `<ul class="parade-list">${parades
-                .map(
-                  (p) =>
-                    `<li><strong>${escapeHtml(p.name)}</strong> · ${PARK_NAMES[p.park]} · ${formatDisplayTime(p.time)}</li>`,
-                )
-                .join('')}</ul>`
-            : ''
-        }
-        <button type="button" class="btn btn-secondary" data-action="add-parade">Agregar desfile</button>
-      </section>
-    </div>
+      <div class="shows-stack">
+        ${cards}
+        <section class="card parade-card" id="parades-section">
+          <h3>Desfiles</h3>
+          <p class="muted"><strong>No hay desfile confirmado actualmente</strong> para el sábado 26 sep 2026.</p>
+          <p class="verify-note">Verificar Disneyland App el mismo día.</p>
+          ${
+            parades.length
+              ? `<ul class="parade-list">${parades
+                  .map(
+                    (p) =>
+                      `<li><strong>${escapeHtml(p.name)}</strong> · ${PARK_NAMES[p.park]} · ${formatDisplayTime(p.time)}</li>`,
+                  )
+                  .join('')}</ul>`
+              : ''
+          }
+          <button type="button" class="btn btn-secondary" data-action="add-parade">Agregar desfile</button>
+        </section>
+      </div>
+    </section>
   `
 }
 
@@ -753,10 +740,6 @@ function renderNav(): string {
         <span class="nav-ico">${icons.list}</span>
         <span class="nav-label">Itinerario</span>
       </button>
-      <button type="button" class="nav-btn${view === 'shows' ? ' is-active' : ''}" data-action="goto-shows">
-        <span class="nav-ico">${icons.show}</span>
-        <span class="nav-label">Shows</span>
-      </button>
       <button type="button" class="nav-btn${view === 'buscar' ? ' is-active' : ''}" data-action="open-search">
         <span class="nav-ico">${icons.search}</span>
         <span class="nav-label">Buscar</span>
@@ -770,7 +753,6 @@ function render(): void {
   let main = ''
   if (view === 'ahora') main = renderNow(snap)
   else if (view === 'itinerario') main = renderTimeline(snap, effective)
-  else if (view === 'shows') main = renderShows()
   else main = renderSearch(snap, effective)
 
   app.className = `app ${parkClass(snap.currentPark)}`
@@ -841,10 +823,15 @@ function onClick(e: Event): void {
       window.scrollTo({ top: 0, behavior: 'smooth' })
       break
     case 'goto-shows':
-      view = 'shows'
+      view = 'itinerario'
       editor = null
       render()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      requestAnimationFrame(() => {
+        document.getElementById('shows-section')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+      })
       break
     case 'open-search':
       view = 'buscar'
@@ -853,7 +840,7 @@ function onClick(e: Event): void {
       render()
       break
     case 'goto-show':
-      view = 'shows'
+      view = 'itinerario'
       editor = null
       render()
       requestAnimationFrame(() => {
