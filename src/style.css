@@ -6,7 +6,7 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
 
-  --nav-h: 72px;
+  --nav-h: 78px;
   --radius: 20px;
   --touch: 48px;
 
@@ -1035,12 +1035,12 @@ body {
   bottom: 0;
   z-index: 40;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
   padding:
-    10px calc(12px + var(--safe-right))
-    calc(10px + var(--safe-bottom))
-    calc(12px + var(--safe-left));
+    8px calc(8px + var(--safe-right))
+    calc(8px + var(--safe-bottom))
+    calc(8px + var(--safe-left));
   background: color-mix(in srgb, var(--card) 88%, white);
   border-top: 1px solid var(--line);
   backdrop-filter: blur(16px);
@@ -1227,3 +1227,257 @@ body {
     transition: none !important;
   }
 }
+
+/* ——— Extras itinerario 26-sep ——— */
+
+.sch-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sch-fijo { background: #e0f2fe; color: #075985; }
+.sch-ll { background: #ffedd5; color: #9a3412; }
+.sch-est { background: #f3f4f6; color: #4b5563; }
+
+.badge-verify {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fde047;
+}
+
+.verify-note {
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+.verify-note.subtle { opacity: 0.75; font-weight: 500; }
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.btn-row .btn-secondary { margin-top: 0; width: auto; flex: 1 1 140px; }
+
+.goals-day { gap: 8px; }
+.goal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.goal-row.is-done .goal-name { text-decoration: line-through; opacity: 0.7; }
+.goal-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+.goal-check {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 2px solid var(--accent);
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  color: var(--accent);
+  background: white;
+}
+.goal-row.is-done .goal-check {
+  background: var(--accent);
+  color: white;
+}
+.goal-emoji .emoji-ico { font-size: 1.25rem; }
+.goal-time { font-weight: 700; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+.card-show-next {
+  border-color: color-mix(in srgb, var(--accent-2) 40%, transparent);
+}
+.card-show-next.is-urgent {
+  border-width: 2px;
+  border-color: #c2410c;
+  background: linear-gradient(160deg, #fff7ed, var(--card));
+  animation: ll-jump 1.2s ease-in-out infinite;
+}
+
+.tl-park-header {
+  list-style: none;
+  margin: 18px 0 8px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.park-head-dl {
+  background: color-mix(in srgb, var(--dl-accent) 12%, white);
+  color: var(--dl-accent);
+}
+.park-head-dca {
+  background: color-mix(in srgb, var(--dca-accent) 12%, white);
+  color: var(--dca-accent);
+}
+
+.trip-date-note {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.shows-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 24px;
+}
+.show-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.show-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+.show-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+.show-park {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  text-align: right;
+}
+.show-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.show-selected { margin: 8px 0; font-size: 1rem; }
+.show-notes { margin-top: 10px; }
+
+.time-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.chip {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: white;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+.chip.is-on {
+  background: color-mix(in srgb, var(--accent) 14%, white);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.parade-card h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+}
+.parade-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+.search-page { padding-bottom: 12px; }
+.search-header-page { margin-bottom: 12px; }
+
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(20, 10, 8, 0.4);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg0);
+  border-radius: 24px 24px 0 0;
+  padding: 20px 16px calc(20px + var(--safe-bottom));
+  box-shadow: 0 -12px 40px rgba(0,0,0,.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sheet h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+.field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+.field-label input,
+.field-label select {
+  min-height: 48px;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  padding: 0 12px;
+  font: inherit;
+  font-size: 1.1rem;
+  color: var(--ink);
+  background: white;
+}
+
+.dev-panel {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px dashed #94a3b8;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+.dev-title {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.dev-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.nav-btn .nav-label { font-size: 0.72rem; }

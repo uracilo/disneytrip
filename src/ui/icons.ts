@@ -1,7 +1,5 @@
 import type { Activity } from '../data/itinerary'
 
-/** Iconos SVG de UI (nav, badges, sistema) */
-
 function svg(body: string, className = 'ico'): string {
   return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${body}</svg>`
 }
@@ -28,93 +26,106 @@ export const icons = {
   star: svg(
     `<path fill="currentColor" d="M12 2.8 14.7 9l6.6.6-5 4.3 1.5 6.4L12 17.2 6.2 20.3 7.7 14 2.7 9.6 9.3 9 12 2.8z"/>`,
   ),
-  character: svg(
-    `<path fill="currentColor" d="M8.2 6.2a2.6 2.6 0 1 1 0-5.2 2.6 2.6 0 0 1 0 5.2zm7.6 0a2.6 2.6 0 1 1 0-5.2 2.6 2.6 0 0 1 0 5.2zM12 7.2a4.4 4.4 0 1 1 0 8.8 4.4 4.4 0 0 1 0-8.8zm-6.5 9.3c1.7-1.4 3.9-2.2 6.5-2.2s4.8.8 6.5 2.2c.9.7 1.5 2 1.5 3.2v1.3H4v-1.3c0-1.2.6-2.5 1.5-3.2z"/>`,
-  ),
-  ride: svg(
-    `<path fill="currentColor" d="M4 17a3 3 0 1 0 6 0H4zm10 0a3 3 0 1 0 6 0h-6zM5.2 7h13.6l1.2 8H4l1.2-8zm2.3-3h9l1 2H6.5l1-2z"/>`,
-  ),
-  food: svg(
-    `<path fill="currentColor" d="M7 3v8a2 2 0 0 0 2 2v8h2V3H7zm8.5 0c-1.4 0-2.5 2.2-2.5 5v5h2v8h2V3h-1.5z"/>`,
-  ),
-  walk: svg(
-    `<path fill="currentColor" d="M13.5 4.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM9.2 8.2l2.3.4.8 2.6 2.2-1.4 1.2 1.8-3.2 2.1-.7 6.3H9.2l.6-5.2-1.8-1.3L6.2 17H4l2.6-6.2 2.6-2.6z"/>`,
-  ),
-  hopper: svg(
-    `<path fill="currentColor" d="M5 7h6v2H7.4l7.2 7.2H19v2h-6v-2h3.6L9.4 9H5V7zm0 10h4v2H5v-2zm10-10h4v2h-4V7z"/>`,
-  ),
   check: svg(
     `<path fill="currentColor" d="M9.6 16.6 4.8 11.8l1.6-1.6 3.2 3.2 7.2-7.2 1.6 1.6-8.8 8.8z"/>`,
   ),
-}
-
-/** Emoji temáticos — grandes, claros, se ven siempre */
-const EMOJI_BY_ID: Record<string, string> = {
-  'entrada-dl': '🏰',
-  dumbo: '🐘',
-  mickey: '🌟',
-  'walk-bayou': '🌳',
-  'pooh-meet': '🍯',
-  'pooh-ride': '🍯',
-  'runaway-railway': '🚂',
-  'comida-dl': '🍽️',
-  'park-hopper': '🎟️',
-  'anna-elsa': '❄️',
-  'toy-story': '🎯',
-  'web-slingers': '🕷️',
-  'little-mermaid': '🐚',
-  'comida-dca': '🍿',
-  'fin-dia': '🌙',
+  show: svg(
+    `<path fill="currentColor" d="M3 5h18v12H3V5zm2 2v8h14V7H5zm6 11h2v2h-2v-2z"/>`,
+  ),
 }
 
 function emojiSpan(emoji: string): string {
   return `<span class="emoji-ico" aria-hidden="true">${emoji}</span>`
 }
 
-export function categoryIcon(category: string): string {
-  switch (category) {
+const EMOJI_BY_ID: Record<string, string> = {
+  seguridad: '🛂',
+  'entrada-dl': '🏰',
+  'reserve-ll-runaway': '⚡',
+  dumbo: '🐘',
+  'alice-or-smallworld': '🐇',
+  'walk-toontown': '🚶',
+  mickey: '🌟',
+  'walk-bayou': '🌳',
+  'pooh-spot': '🍯',
+  'pooh-meet': '🍯',
+  'pooh-ride': '🍯',
+  'watch-ll-toystory': '⚡',
+  'runaway-railway': '🚂',
+  'flex-morning': '✨',
+  'comida-dl': '🍽️',
+  'watch-ll-web': '⚡',
+  'flex-pre-hopper': '🗺️',
+  'prep-hopper': '🎟️',
+  'park-hopper': '🎟️',
+  'entrada-dca': '🎡',
+  'anna-elsa': '❄️',
+  'flex-hollywood': '✨',
+  'trick-treat': '🎃',
+  'toy-story': '🎯',
+  'web-slingers': '🕷️',
+  monsters: '👾',
+  'little-mermaid': '🐚',
+  'jessie-carousel': '🐴',
+  'inside-out': '🧠',
+  'pal-around': '🎡',
+  'cena-dca': '🍿',
+  'flex-evening': '🌙',
+}
+
+export function categoryIcon(type: string): string {
+  switch (type) {
+    case 'character':
     case 'personaje':
       return emojiSpan('😊')
+    case 'ride':
     case 'atracción':
       return emojiSpan('🎢')
+    case 'food':
     case 'comida':
       return emojiSpan('🍽️')
     case 'caminata':
+    case 'transport':
       return emojiSpan('🚶')
     case 'park_hopper':
       return emojiSpan('🎟️')
     case 'entrada':
       return emojiSpan('🏰')
-    case 'lightning_lane':
+    case 'lightning-lane':
+    case 'reminder':
       return emojiSpan('⚡')
+    case 'show':
+    case 'night-show':
+      return emojiSpan('🎭')
+    case 'flexible':
+      return emojiSpan('✨')
     default:
       return emojiSpan('✨')
   }
 }
 
-/** Icono temático grande por atracción / personaje */
 export function activityIcon(activity: Activity): string {
   const byId = EMOJI_BY_ID[activity.id]
   if (byId) return emojiSpan(byId)
 
   const hay = `${activity.title} ${activity.subtitle ?? ''} ${(activity.keywords ?? []).join(' ')}`.toLowerCase()
-
-  if (/elsa|anna|frozen|nieve|snow/.test(hay)) return emojiSpan('❄️')
-  if (/pooh|winnie|honey|miel/.test(hay)) return emojiSpan('🍯')
-  if (/dumbo|elefante|elephant/.test(hay)) return emojiSpan('🐘')
+  if (/elsa|anna|frozen/.test(hay)) return emojiSpan('❄️')
+  if (/pooh|winnie/.test(hay)) return emojiSpan('🍯')
+  if (/dumbo/.test(hay)) return emojiSpan('🐘')
   if (/spider|web|slinger/.test(hay)) return emojiSpan('🕷️')
-  if (/mermaid|ariel|sirenita|shell/.test(hay)) return emojiSpan('🐚')
-  if (/toy|story|buzz|woody/.test(hay)) return emojiSpan('🎯')
-  if (/train|railway|tren/.test(hay)) return emojiSpan('🚂')
-  if (/mickey|mouse/.test(hay)) return emojiSpan('🌟')
-  if (/bayou|critter|tree|bosque/.test(hay)) return emojiSpan('🌳')
-  if (/comida|food|lunch|cena|snack/.test(hay)) return emojiSpan('🍽️')
-  if (/hopper|cambio/.test(hay)) return emojiSpan('🎟️')
+  if (/mermaid|ariel/.test(hay)) return emojiSpan('🐚')
+  if (/toy|story/.test(hay)) return emojiSpan('🎯')
+  if (/train|railway/.test(hay)) return emojiSpan('🚂')
+  if (/mickey/.test(hay)) return emojiSpan('🌟')
+  if (/trick|treat|pumpkin/.test(hay)) return emojiSpan('🎃')
+  if (/monster/.test(hay)) return emojiSpan('👾')
+  if (/coco|familia/.test(hay)) return emojiSpan('🎸')
+  if (/fantasmic/.test(hay)) return emojiSpan('🌙')
+  if (/comida|food|cena|snack/.test(hay)) return emojiSpan('🍽️')
 
-  return categoryIcon(activity.category)
+  return categoryIcon(activity.type)
 }
 
-/** Punto de timeline: mismo emoji, tamaño compacto */
 export function activityDotIcon(activity: Activity, preferBolt = false): string {
   if (preferBolt) return emojiSpan('⚡')
   return activityIcon(activity)

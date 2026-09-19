@@ -4,6 +4,8 @@ PWA personal para usar caminando en Disneyland: **qué toca ahora**, **qué sigu
 
 **Live:** https://uracilo.github.io/disneytrip/
 
+Itinerario: **sábado 26 de septiembre de 2026** · Disneyland Resort (2 adultos + niña ~2.5 años).
+
 ## Cómo usar
 
 ```bash
