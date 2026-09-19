@@ -17,7 +17,7 @@ import {
   formatAnaheimClock,
   formatDisplayTime,
 } from './lib/time'
-import { activityIcon, iconLabel, icons } from './ui/icons'
+import { activityDotIcon, activityIcon, iconLabel, icons } from './ui/icons'
 import './style.css'
 
 type View = 'ahora' | 'itinerario'
@@ -275,7 +275,7 @@ function renderTimeline(snap: DaySnapshot): string {
             <time datetime="${a.start}">${formatDisplayTime(a.start)}</time>
             <span class="tl-status-text">${statusLabel(done ? 'completada' : status)}</span>
           </div>
-          <div class="tl-dot" aria-hidden="true">${isWatch ? icons.bolt : activityIcon(a)}</div>
+          <div class="tl-dot" aria-hidden="true">${activityDotIcon(a, isWatch)}</div>
           <div class="tl-body${isWatch ? ' tl-body-ll' : ''}">
             <div class="title-row title-row-sm">
               <span class="cat-ico">${activityIcon(a)}</span>
@@ -590,8 +590,27 @@ document.addEventListener('visibilitychange', () => {
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     const swUrl = `${import.meta.env.BASE_URL}sw.js`
-    navigator.serviceWorker.register(swUrl).catch(() => {
+    navigator.serviceWorker.register(swUrl).then((reg) => {
+      reg.update().catch(() => {})
+      // Si hay SW esperando, activarlo ya
+      if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING')
+      reg.addEventListener('updatefound', () => {
+        const neu = reg.installing
+        neu?.addEventListener('statechange', () => {
+          if (neu.state === 'installed' && navigator.serviceWorker.controller) {
+            neu.postMessage('SKIP_WAITING')
+          }
+        })
+      })
+    }).catch(() => {
       /* silencioso: la app sigue offline con datos embebidos */
+    })
+    // Recargar una vez cuando el nuevo SW tome control
+    let refreshing = false
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return
+      refreshing = true
+      window.location.reload()
     })
   })
 } else if ('serviceWorker' in navigator) {

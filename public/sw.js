@@ -1,5 +1,5 @@
 /* Service worker mínimo — cache runtime, sin librerías */
-const CACHE = 'disneytrip-v4'
+const CACHE = 'disneytrip-v5'
 const BASE = new URL(self.registration.scope).pathname
 
 self.addEventListener('install', (event) => {
@@ -20,6 +20,10 @@ self.addEventListener('activate', (event) => {
       Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))),
     ).then(() => self.clients.claim()),
   )
+})
+
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting()
 })
 
 self.addEventListener('fetch', (event) => {

@@ -406,29 +406,47 @@ body {
 .cat-ico {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  margin-top: 4px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--accent) 12%, white);
+  width: 48px;
+  height: 48px;
+  margin-top: 0;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 14%, white);
   color: var(--accent);
   flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .cat-ico .ico {
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
+}
+
+.cat-ico .emoji-ico {
+  font-size: 1.55rem;
+  line-height: 1;
 }
 
 .title-row-sm .cat-ico {
-  width: 30px;
-  height: 30px;
-  margin-top: 2px;
+  width: 44px;
+  height: 44px;
+  margin-top: 0;
 }
 
 .title-row-sm .cat-ico .ico {
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
+}
+
+.title-row-sm .cat-ico .emoji-ico {
+  font-size: 1.4rem;
+}
+
+.emoji-ico {
+  display: block;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
 }
 
 .now-time {
@@ -537,19 +555,25 @@ body {
 .ll-btn-bolt {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 14px;
   background: #ea580c;
   color: #fff7ed;
   flex-shrink: 0;
   box-shadow: 0 4px 0 #9a3412;
   animation: bolt-flash 1.15s ease-in-out infinite;
+  font-size: 1.6rem;
 }
 
 .ll-btn-bolt .ico {
   width: 26px;
   height: 26px;
+}
+
+.ll-btn-bolt .emoji-ico {
+  font-size: 1.55rem;
+  filter: none;
 }
 
 .ll-btn-body {
@@ -696,8 +720,13 @@ body {
   font-weight: 600;
 }
 
-.goal-item .ico {
-  color: var(--priority);
+.hit-title .emoji-ico {
+  font-size: 1.25rem;
+  margin-right: 4px;
+}
+
+.goal-item .emoji-ico {
+  font-size: 1.15rem;
 }
 
 /* ——— Buttons ——— */
@@ -813,28 +842,34 @@ body {
 }
 
 .tl-dot {
-  width: 22px;
-  height: 22px;
-  margin-top: 4px;
+  width: 28px;
+  height: 28px;
+  margin-top: 2px;
   border-radius: 50%;
-  background: var(--accent-2);
-  border: 2px solid color-mix(in srgb, var(--card) 80%, white);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
+  background: #fff;
+  border: 2px solid color-mix(in srgb, var(--accent) 40%, white);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
   z-index: 1;
   justify-self: center;
   display: grid;
   place-items: center;
-  color: white;
-  overflow: hidden;
+  color: var(--accent);
+  overflow: visible;
 }
 
 .tl-dot .ico {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
+}
+
+.tl-dot .emoji-ico {
+  font-size: 0.95rem;
+  line-height: 1;
 }
 
 .has-ll-watch .tl-dot {
-  background: #ea580c;
+  background: #fff7ed;
+  border-color: #ea580c;
   box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.35);
   animation: bolt-flash 1.15s ease-in-out infinite;
 }
@@ -903,7 +938,22 @@ body {
 .status-pasada,
 .status-completada,
 .is-done {
-  opacity: 0.55;
+  opacity: 1;
+}
+
+.status-pasada .tl-body,
+.status-completada .tl-body,
+.is-done .tl-body {
+  opacity: 0.72;
+}
+
+.status-pasada .cat-ico,
+.status-completada .cat-ico,
+.is-done .cat-ico,
+.status-pasada .tl-dot,
+.status-completada .tl-dot,
+.is-done .tl-dot {
+  opacity: 1;
 }
 
 .status-pasada .tl-title,
