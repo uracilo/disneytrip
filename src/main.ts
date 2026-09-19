@@ -17,7 +17,7 @@ import {
   formatAnaheimClock,
   formatDisplayTime,
 } from './lib/time'
-import { categoryIcon, iconLabel, icons } from './ui/icons'
+import { activityIcon, iconLabel, icons } from './ui/icons'
 import './style.css'
 
 type View = 'ahora' | 'itinerario'
@@ -99,7 +99,7 @@ function renderNow(snap: DaySnapshot): string {
       <section class="card card-now" data-id="${snap.current.id}">
         ${eyebrow(icons.sparkle, 'Ahora')}
         <div class="title-row">
-          <span class="cat-ico">${categoryIcon(snap.current.category)}</span>
+          <span class="cat-ico">${activityIcon(snap.current)}</span>
           <h2 class="now-title">${escapeHtml(snap.current.title)}</h2>
         </div>
         ${snap.current.subtitle ? `<p class="now-sub">${escapeHtml(snap.current.subtitle)}</p>` : ''}
@@ -136,7 +136,7 @@ function renderNow(snap: DaySnapshot): string {
       <section class="card card-next" data-id="${snap.next.id}">
         ${eyebrow(icons.clock, 'Sigue')}
         <div class="title-row title-row-sm">
-          <span class="cat-ico">${categoryIcon(snap.next.category)}</span>
+          <span class="cat-ico">${activityIcon(snap.next)}</span>
           <h3 class="next-title">${escapeHtml(snap.next.title)}</h3>
         </div>
         ${snap.next.subtitle ? `<p class="muted">${escapeHtml(snap.next.subtitle)}</p>` : ''}
@@ -177,7 +177,7 @@ function renderNow(snap: DaySnapshot): string {
               data-action="jump"
               data-id="${a.id}"
             >
-              <span class="ll-btn-bolt" aria-hidden="true">${icons.bolt}</span>
+              <span class="ll-btn-bolt" aria-hidden="true">${activityIcon(a)}</span>
               <span class="ll-btn-body">
                 <span class="ll-btn-title">${escapeHtml(a.title)}</span>
                 <span class="ll-btn-meta">
@@ -208,7 +208,7 @@ function renderNow(snap: DaySnapshot): string {
           ${snap.priorities
             .map(
               (a) =>
-                `<li><span class="goal-item">${icons.star}<span>${escapeHtml(a.title)}</span></span><span>${formatDisplayTime(a.start)}</span></li>`,
+                `<li><span class="goal-item">${activityIcon(a)}<span>${escapeHtml(a.title)}</span></span><span>${formatDisplayTime(a.start)}</span></li>`,
             )
             .join('')}
         </ul>
@@ -275,10 +275,10 @@ function renderTimeline(snap: DaySnapshot): string {
             <time datetime="${a.start}">${formatDisplayTime(a.start)}</time>
             <span class="tl-status-text">${statusLabel(done ? 'completada' : status)}</span>
           </div>
-          <div class="tl-dot" aria-hidden="true">${isWatch ? icons.bolt : categoryIcon(a.category)}</div>
+          <div class="tl-dot" aria-hidden="true">${isWatch ? icons.bolt : activityIcon(a)}</div>
           <div class="tl-body${isWatch ? ' tl-body-ll' : ''}">
             <div class="title-row title-row-sm">
-              <span class="cat-ico">${categoryIcon(a.category)}</span>
+              <span class="cat-ico">${activityIcon(a)}</span>
               <h3 class="tl-title">${escapeHtml(a.title)}</h3>
             </div>
             ${a.subtitle ? `<p class="muted">${escapeHtml(a.subtitle)}</p>` : ''}
@@ -339,7 +339,7 @@ function renderSearchOverlay(): string {
                 return `
                 <li>
                   <button type="button" class="search-hit${a.lightningLane?.watch ? ' search-hit-ll' : ''}" data-action="jump" data-id="${a.id}">
-                    <span class="hit-title">${categoryIcon(a.category)} ${escapeHtml(a.title)}</span>
+                    <span class="hit-title">${activityIcon(a)} ${escapeHtml(a.title)}</span>
                     <span class="hit-meta">
                       ${formatDisplayTime(a.start)}
                       · ${PARK_NAMES[a.park]}
@@ -534,7 +534,7 @@ function onInput(e: Event): void {
           return `
           <li>
             <button type="button" class="search-hit${a.lightningLane?.watch ? ' search-hit-ll' : ''}" data-action="jump" data-id="${a.id}">
-              <span class="hit-title">${categoryIcon(a.category)} ${escapeHtml(a.title)}</span>
+              <span class="hit-title">${activityIcon(a)} ${escapeHtml(a.title)}</span>
               <span class="hit-meta">
                 ${formatDisplayTime(a.start)}
                 · ${PARK_NAMES[a.park]}
