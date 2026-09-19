@@ -17,6 +17,7 @@ import {
   formatAnaheimClock,
   formatDisplayTime,
 } from './lib/time'
+import { categoryIcon, iconLabel, icons } from './ui/icons'
 import './style.css'
 
 type View = 'ahora' | 'itinerario'
@@ -62,16 +63,30 @@ function timeRange(a: Activity): string {
 
 function badges(a: Activity, status?: string): string {
   const parts: string[] = []
-  if (a.priority) parts.push('<span class="badge badge-priority">Prioridad</span>')
+  if (a.priority) {
+    parts.push(
+      `<span class="badge badge-priority">${icons.star}<span>Prioridad</span></span>`,
+    )
+  }
   if (a.lightningLane?.watch) {
-    parts.push('<span class="badge badge-ll">Lightning Lane · Vigilar</span>')
+    parts.push(
+      `<span class="badge badge-ll badge-ll-pulse">${icons.bolt}<span>Lightning Lane · Vigilar</span></span>`,
+    )
   } else if (a.lightningLane) {
-    parts.push('<span class="badge badge-ll-soft">Lightning Lane</span>')
+    parts.push(
+      `<span class="badge badge-ll-soft">${icons.bolt}<span>Lightning Lane</span></span>`,
+    )
   }
   if (status === 'completada') {
-    parts.push('<span class="badge badge-done">Hecha</span>')
+    parts.push(
+      `<span class="badge badge-done">${icons.check}<span>Hecha</span></span>`,
+    )
   }
   return parts.length ? `<div class="badges">${parts.join('')}</div>` : ''
+}
+
+function eyebrow(icon: string, text: string): string {
+  return `<p class="eyebrow">${iconLabel(icon, text)}</p>`
 }
 
 function renderNow(snap: DaySnapshot): string {
@@ -82,12 +97,16 @@ function renderNow(snap: DaySnapshot): string {
   const currentBlock = snap.current
     ? `
       <section class="card card-now" data-id="${snap.current.id}">
-        <p class="eyebrow">Ahora</p>
-        <h2 class="now-title">${escapeHtml(snap.current.title)}</h2>
+        ${eyebrow(icons.sparkle, 'Ahora')}
+        <div class="title-row">
+          <span class="cat-ico">${categoryIcon(snap.current.category)}</span>
+          <h2 class="now-title">${escapeHtml(snap.current.title)}</h2>
+        </div>
         ${snap.current.subtitle ? `<p class="now-sub">${escapeHtml(snap.current.subtitle)}</p>` : ''}
-        <p class="now-time">${timeRange(snap.current)}</p>
+        <p class="now-time">${icons.clock}${timeRange(snap.current)}</p>
         ${badges(snap.current)}
         <button type="button" class="btn btn-secondary" data-action="toggle-done" data-id="${snap.current.id}">
+          ${icons.check}
           ${completed.has(snap.current.id) ? 'Desmarcar' : 'Marcar como hecho'}
         </button>
       </section>
@@ -95,14 +114,14 @@ function renderNow(snap: DaySnapshot): string {
     : snap.dayDone
       ? `
       <section class="card card-now card-now-empty">
-        <p class="eyebrow">Ahora</p>
+        ${eyebrow(icons.sparkle, 'Ahora')}
         <h2 class="now-title">Día listo</h2>
         <p class="now-sub">No quedan actividades pendientes. ¡Buen trabajo!</p>
       </section>
     `
       : `
       <section class="card card-now card-now-empty">
-        <p class="eyebrow">Ahora</p>
+        ${eyebrow(icons.walk, 'Ahora')}
         <h2 class="now-title">${snap.isTripDay ? 'En camino' : 'Plan del día'}</h2>
         <p class="now-sub">${
           snap.next
@@ -115,8 +134,11 @@ function renderNow(snap: DaySnapshot): string {
   const nextBlock = snap.next
     ? `
       <section class="card card-next" data-id="${snap.next.id}">
-        <p class="eyebrow">Sigue</p>
-        <h3 class="next-title">${escapeHtml(snap.next.title)}</h3>
+        ${eyebrow(icons.clock, 'Sigue')}
+        <div class="title-row title-row-sm">
+          <span class="cat-ico">${categoryIcon(snap.next.category)}</span>
+          <h3 class="next-title">${escapeHtml(snap.next.title)}</h3>
+        </div>
         ${snap.next.subtitle ? `<p class="muted">${escapeHtml(snap.next.subtitle)}</p>` : ''}
         <p class="next-meta">
           <span>${formatDisplayTime(snap.next.start)}</span>
@@ -130,7 +152,7 @@ function renderNow(snap: DaySnapshot): string {
   const afterBlock = snap.afterNext
     ? `
       <section class="card card-after" data-id="${snap.afterNext.id}">
-        <p class="eyebrow">Después</p>
+        ${eyebrow(icons.list, 'Después')}
         <p class="after-line">
           <strong>${escapeHtml(snap.afterNext.title)}</strong>
           <span>${formatDisplayTime(snap.afterNext.start)}</span>
@@ -142,33 +164,37 @@ function renderNow(snap: DaySnapshot): string {
   const llBlock =
     snap.watchLanes.length > 0
       ? `
-      <section class="card card-ll">
-        <p class="eyebrow">Lightning Lane</p>
-        <ul class="ll-list">
+      <section class="ll-panel">
+        ${eyebrow(icons.bolt, 'Lightning Lane — ¡Vigilar!')}
+        <div class="ll-buttons">
           ${snap.watchLanes
             .map(
-              (a) => `
-            <li data-id="${a.id}">
-              <div>
-                <strong>${escapeHtml(a.title)}</strong>
-                <span class="ll-watch">Vigilar</span>
-              </div>
-              <div class="ll-meta">
-                ${
-                  a.lightningLane?.estimatedTime
-                    ? `<span>Horario estimado: ${formatDisplayTime(a.lightningLane.estimatedTime)}</span>`
-                    : `<span>${formatDisplayTime(a.start)}</span>`
-                }
-                ${
-                  a.lightningLane?.risk
-                    ? `<span class="risk risk-${a.lightningLane.risk}">Riesgo ${a.lightningLane.risk}</span>`
-                    : ''
-                }
-              </div>
-            </li>`,
+              (a, i) => `
+            <button
+              type="button"
+              class="ll-btn ll-bounce"
+              style="animation-delay: ${i * 0.18}s"
+              data-action="jump"
+              data-id="${a.id}"
+            >
+              <span class="ll-btn-bolt" aria-hidden="true">${icons.bolt}</span>
+              <span class="ll-btn-body">
+                <span class="ll-btn-title">${escapeHtml(a.title)}</span>
+                <span class="ll-btn-meta">
+                  ${
+                    a.lightningLane?.estimatedTime
+                      ? `Estimado ${formatDisplayTime(a.lightningLane.estimatedTime)}`
+                      : formatDisplayTime(a.start)
+                  }
+                  ${a.lightningLane?.risk ? ` · Riesgo ${a.lightningLane.risk}` : ''}
+                </span>
+                <span class="ll-btn-cta">Ver en itinerario</span>
+              </span>
+              <span class="ll-btn-watch">Vigilar</span>
+            </button>`,
             )
             .join('')}
-        </ul>
+        </div>
       </section>
     `
       : ''
@@ -177,12 +203,12 @@ function renderNow(snap: DaySnapshot): string {
     snap.priorities.length > 0
       ? `
       <section class="card card-goals">
-        <p class="eyebrow">Prioridad del día</p>
+        ${eyebrow(icons.star, 'Prioridad del día')}
         <ul class="goals-list">
           ${snap.priorities
             .map(
               (a) =>
-                `<li><span>${escapeHtml(a.title)}</span><span>${formatDisplayTime(a.start)}</span></li>`,
+                `<li><span class="goal-item">${icons.star}<span>${escapeHtml(a.title)}</span></span><span>${formatDisplayTime(a.start)}</span></li>`,
             )
             .join('')}
         </ul>
@@ -193,17 +219,18 @@ function renderNow(snap: DaySnapshot): string {
   return `
     <header class="top-bar">
       <div class="clock-block" aria-live="polite">
-        <span class="clock-label">Anaheim</span>
+        <span class="clock-label">${icons.castle} Anaheim</span>
         <span class="clock">${clock}</span>
       </div>
       <button type="button" class="btn btn-search-top" data-action="open-search" aria-label="Buscar">
+        ${icons.search}
         Buscar
       </button>
     </header>
 
     <div class="brand-row">
-      <p class="brand">Guía Disney</p>
-      <p class="park-name" data-park="${park ?? ''}">${escapeHtml(parkName)}</p>
+      <p class="brand">${icons.sparkle} Guía Disney</p>
+      <p class="park-name" data-park="${park ?? ''}">${icons.castle} ${escapeHtml(parkName)}</p>
     </div>
 
     <div class="now-stack">
@@ -213,6 +240,7 @@ function renderNow(snap: DaySnapshot): string {
       ${llBlock}
       ${goals}
       <button type="button" class="btn btn-ghost" data-action="goto-itinerario">
+        ${icons.list}
         Ver itinerario
       </button>
     </div>
@@ -226,10 +254,10 @@ function renderTimeline(snap: DaySnapshot): string {
         return `
           <li class="tl-change" id="act-${a.id}" data-id="${a.id}">
             <div class="change-banner">
-              <p class="change-label">Cambio de parque</p>
-              <p class="change-from">Disneyland Park · ${formatDisplayTime(a.start)}</p>
+              <p class="change-label">${icons.hopper} Cambio de parque</p>
+              <p class="change-from">${icons.castle} Disneyland Park · ${formatDisplayTime(a.start)}</p>
               <p class="change-arrow" aria-hidden="true">↓</p>
-              <p class="change-to">Disney California Adventure · ${formatDisplayTime(a.end ?? a.start)}</p>
+              <p class="change-to">${icons.sparkle} Disney California Adventure · ${formatDisplayTime(a.end ?? a.start)}</p>
             </div>
           </li>
         `
@@ -238,23 +266,35 @@ function renderTimeline(snap: DaySnapshot): string {
       const status = snap.statuses.get(a.id) ?? 'futura'
       const hl = highlightId === a.id ? ' is-highlight' : ''
       const done = completed.has(a.id)
+      const isWatch = Boolean(a.lightningLane?.watch) && !done && status !== 'pasada'
 
       return `
-        <li class="tl-item status-${status}${hl}${done ? ' is-done' : ''} park-${a.park === 'california_adventure' ? 'dca' : a.park === 'disneyland' ? 'dl' : 'tr'}"
+        <li class="tl-item status-${status}${hl}${done ? ' is-done' : ''}${isWatch ? ' has-ll-watch' : ''} park-${a.park === 'california_adventure' ? 'dca' : a.park === 'disneyland' ? 'dl' : 'tr'}"
             id="act-${a.id}" data-id="${a.id}">
           <div class="tl-time-col">
             <time datetime="${a.start}">${formatDisplayTime(a.start)}</time>
             <span class="tl-status-text">${statusLabel(done ? 'completada' : status)}</span>
           </div>
-          <div class="tl-dot" aria-hidden="true"></div>
-          <div class="tl-body">
-            <h3 class="tl-title">${escapeHtml(a.title)}</h3>
+          <div class="tl-dot" aria-hidden="true">${isWatch ? icons.bolt : categoryIcon(a.category)}</div>
+          <div class="tl-body${isWatch ? ' tl-body-ll' : ''}">
+            <div class="title-row title-row-sm">
+              <span class="cat-ico">${categoryIcon(a.category)}</span>
+              <h3 class="tl-title">${escapeHtml(a.title)}</h3>
+            </div>
             ${a.subtitle ? `<p class="muted">${escapeHtml(a.subtitle)}</p>` : ''}
             <p class="tl-park">${PARK_NAMES[a.park]}</p>
             ${badges(a, done ? 'completada' : status)}
             ${
+              isWatch
+                ? `<div class="ll-btn ll-btn-inline ll-bounce" role="status">
+                    ${icons.bolt}
+                    <span>Lightning Lane · Vigilar</span>
+                  </div>`
+                : ''
+            }
+            ${
               status !== 'pasada' && !done
-                ? `<button type="button" class="btn btn-tiny" data-action="toggle-done" data-id="${a.id}">Marcar como hecho</button>`
+                ? `<button type="button" class="btn btn-tiny" data-action="toggle-done" data-id="${a.id}">${icons.check} Marcar como hecho</button>`
                 : done
                   ? `<button type="button" class="btn btn-tiny" data-action="toggle-done" data-id="${a.id}">Desmarcar</button>`
                   : ''
@@ -272,7 +312,7 @@ function renderTimeline(snap: DaySnapshot): string {
         <p class="section-title">Itinerario</p>
       </div>
       <button type="button" class="btn btn-secondary btn-compact" data-action="goto-ahora">
-        Volver a ahora
+        ${icons.sparkle} Volver a ahora
       </button>
     </header>
     <ol class="timeline">
@@ -298,8 +338,8 @@ function renderSearchOverlay(): string {
                 const status = snap.statuses.get(a.id) ?? 'futura'
                 return `
                 <li>
-                  <button type="button" class="search-hit" data-action="jump" data-id="${a.id}">
-                    <span class="hit-title">${escapeHtml(a.title)}</span>
+                  <button type="button" class="search-hit${a.lightningLane?.watch ? ' search-hit-ll' : ''}" data-action="jump" data-id="${a.id}">
+                    <span class="hit-title">${categoryIcon(a.category)} ${escapeHtml(a.title)}</span>
                     <span class="hit-meta">
                       ${formatDisplayTime(a.start)}
                       · ${PARK_NAMES[a.park]}
@@ -307,7 +347,7 @@ function renderSearchOverlay(): string {
                     </span>
                     <span class="hit-status">
                       ${statusLabel(completed.has(a.id) ? 'completada' : status)}
-                      ${a.lightningLane?.watch ? ' · Lightning Lane' : ''}
+                      ${a.lightningLane?.watch ? ` · ${icons.bolt} Lightning Lane` : ''}
                       ${a.lightningLane?.risk ? ` · Riesgo ${a.lightningLane.risk}` : ''}
                     </span>
                   </button>
@@ -320,7 +360,7 @@ function renderSearchOverlay(): string {
     <div class="search-overlay" role="dialog" aria-modal="true" aria-label="Buscar">
       <div class="search-sheet">
         <div class="search-header">
-          <label class="search-label" for="search-input">Buscar</label>
+          <label class="search-label" for="search-input">${icons.search} Buscar</label>
           <button type="button" class="btn btn-secondary btn-compact" data-action="close-search">
             Cerrar
           </button>
@@ -347,12 +387,15 @@ function renderNav(): string {
   return `
     <nav class="bottom-nav" aria-label="Navegación principal">
       <button type="button" class="nav-btn${view === 'ahora' && !searchOpen ? ' is-active' : ''}" data-action="goto-ahora">
+        <span class="nav-ico">${icons.sparkle}</span>
         <span class="nav-label">Ahora</span>
       </button>
       <button type="button" class="nav-btn${view === 'itinerario' && !searchOpen ? ' is-active' : ''}" data-action="goto-itinerario">
+        <span class="nav-ico">${icons.list}</span>
         <span class="nav-label">Itinerario</span>
       </button>
       <button type="button" class="nav-btn${searchOpen ? ' is-active' : ''}" data-action="open-search">
+        <span class="nav-ico">${icons.search}</span>
         <span class="nav-label">Buscar</span>
       </button>
     </nav>
@@ -490,8 +533,8 @@ function onInput(e: Event): void {
           const status = snap.statuses.get(a.id) ?? 'futura'
           return `
           <li>
-            <button type="button" class="search-hit" data-action="jump" data-id="${a.id}">
-              <span class="hit-title">${escapeHtml(a.title)}</span>
+            <button type="button" class="search-hit${a.lightningLane?.watch ? ' search-hit-ll' : ''}" data-action="jump" data-id="${a.id}">
+              <span class="hit-title">${categoryIcon(a.category)} ${escapeHtml(a.title)}</span>
               <span class="hit-meta">
                 ${formatDisplayTime(a.start)}
                 · ${PARK_NAMES[a.park]}
@@ -499,7 +542,7 @@ function onInput(e: Event): void {
               </span>
               <span class="hit-status">
                 ${statusLabel(completed.has(a.id) ? 'completada' : status)}
-                ${a.lightningLane?.watch ? ' · Lightning Lane' : ''}
+                ${a.lightningLane?.watch ? ` · ${icons.bolt} Lightning Lane` : ''}
                 ${a.lightningLane?.risk ? ` · Riesgo ${a.lightningLane.risk}` : ''}
               </span>
             </button>

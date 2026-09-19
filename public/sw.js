@@ -1,5 +1,5 @@
 /* Service worker mínimo — cache runtime, sin librerías */
-const CACHE = 'disneytrip-v2'
+const CACHE = 'disneytrip-v3'
 const BASE = new URL(self.registration.scope).pathname
 
 self.addEventListener('install', (event) => {
